@@ -5,26 +5,24 @@ require_once "models/Item.php";
 
 function getAll(): array
 {
-    $defaultReturn = array();
-    $defaultItem = new Item();
-    $defaultItem->guid = 0;
-    $defaultItem->name = "None";
-    $defaultItem->relatedItems = array("None");
-    $defaultItem->aliases = array("None");
-    $defaultItem->rating = 0;
-    $defaultReturn[] = $defaultItem;
-
     global $db;
     $qry = "SELECT guid, name, rating, aliases, related_items FROM items";
     $results = $db->query($qry);
 
     if ($results === false) {
-        return $defaultReturn;
+        return array();
     }
 
     $allItems = array();
-    foreach ($results->fetch_all() as $result) {
-        $item = new Item($result);
+    foreach ($results->fetch_all(MYSQLI_ASSOC) as $result) {
+        $item = new Item();
+        $item->constructFromValues(
+            $result["guid"],
+            $result["name"],
+            $result["rating"],
+            explode(",", $result["aliases"]),
+            explode(",", $result["related_items"])
+        );
         $allItems[] = $item;
     }
 
@@ -76,13 +74,38 @@ function tryCreate(Item $item): bool
     return $stmt->execute();
 }
 
-function update($guid, $item)
+function tryUpdate(string $guid, Item $newItem): bool
 {
+    $oldItem = getByGuid($guid);
 
+    if ($oldItem === null) {
+        return false;
+    }
+
+    $qry = "UPDATE items SET name = ? AND rating = ? AND aliases = ? AND related_items = ? WHERE guid = ?";
+    $stmt = createPreparedStatement($qry);
+
+    if ($stmt === false) {
+        return false;
+    }
+
+    $name = $newItem->name ?? $oldItem->name;
+    $rating = $newItem->rating ?? $oldItem->rating;
+    $aliases = implode(",", $newItem->aliases) ?? implode(",", $oldItem->aliases);
+    $relatedItems = implode(",", $newItem->relatedItems) ?? implode(",", $oldItem->relatedItems);
+
+    $stmt->bind_param("sisss", $name, $rating, $aliases, $relatedItems, $guid);
+    return $stmt->execute();
 }
 
-function delete($guid)
+function tryDelete($guid): bool
 {
+    $qry = "DELETE FROM items WHERE guid = ?";
+    $stmt = createPreparedStatement($qry);
 
+    if ($stmt === false) {
+        return false;
+    }
+
+    return $stmt->execute([$guid]);
 }
-
