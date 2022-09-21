@@ -38,13 +38,25 @@ function getByGuid(string $guid): ?Item
         return null;
     }
 
-    $result = $stmt->get_result();
+    $stmt->execute([$guid]);
 
-    if ($result === false) {
-        return null;
+    $results = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    for ($i = 0; $i < sizeof($results); $i++) {
+        $result = $results[$i];
+
+        $item = new Item();
+        $item->constructFromValues(
+            $result["guid"],
+            $result["name"],
+            $result["rating"],
+            explode(",", $result["aliases"]),
+            explode(",", $result["related_items"])
+        );
+
+        return $item;
     }
 
-    return new Item($result);
+    return null;
 }
 
 function getFiltered(Item $filterItem): array
@@ -82,17 +94,17 @@ function tryUpdate(string $guid, Item $newItem): bool
         return false;
     }
 
-    $qry = "UPDATE items SET name = ? AND rating = ? AND aliases = ? AND related_items = ? WHERE guid = ?";
+    $qry = "UPDATE items SET name = ?, rating = ?, aliases = ?, related_items = ? WHERE guid = ?";
     $stmt = createPreparedStatement($qry);
 
     if ($stmt === false) {
         return false;
     }
 
-    $name = $newItem->name ?? $oldItem->name;
-    $rating = $newItem->rating ?? $oldItem->rating;
-    $aliases = implode(",", $newItem->aliases) ?? implode(",", $oldItem->aliases);
-    $relatedItems = implode(",", $newItem->relatedItems) ?? implode(",", $oldItem->relatedItems);
+    $name = getNonEmptyValue($newItem->name, $oldItem->name);
+    $rating = getNonEmptyValue($newItem->rating, $oldItem->rating);
+    $aliases = getNonEmptyValue(implode(",", $newItem->aliases), implode(",", $oldItem->aliases));
+    $relatedItems = getNonEmptyValue(implode(",", $newItem->relatedItems), implode(",", $oldItem->relatedItems));
 
     $stmt->bind_param("sisss", $name, $rating, $aliases, $relatedItems, $guid);
     return $stmt->execute();
@@ -108,4 +120,9 @@ function tryDelete($guid): bool
     }
 
     return $stmt->execute([$guid]);
+}
+
+function getNonEmptyValue($a, $b)
+{
+    return empty($a) ? $b : $a;
 }

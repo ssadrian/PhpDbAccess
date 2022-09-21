@@ -10,13 +10,18 @@ class Item
 
     private bool $isInitialized = false;
 
-    public function constructFromValues(string $guid, string $name, int $rating, array $aliases, array $relatedItems): void
+    public function constructFromValues(
+        string $guid,
+        string $name = null,
+        int    $rating = null,
+        array  $aliases = null,
+        array  $relatedItems = null): void
     {
         $this->guid = $guid;
-        $this->name = $name;
-        $this->rating = $rating;
-        $this->aliases = $aliases;
-        $this->relatedItems = $relatedItems;
+        $this->name = $name ?? "";
+        $this->rating = $rating ?? 0;
+        $this->aliases = $aliases ?? [];
+        $this->relatedItems = $relatedItems ?? [];
         $this->isInitialized = true;
     }
 
