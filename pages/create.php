@@ -19,41 +19,35 @@ function GUID(): string
 }
 
 if (!(empty($name) || empty($aliases) || empty($relatedItems))) {
-    $item = new Item();
-    $item->constructFromValues($guid, $name, $rating, explode(",", $aliases), explode(",", $relatedItems));
-    tryCreate($item);
+    $isSuccessful = tryCreate(new Item($guid, $name, $rating, $aliases, $relatedItems));
 }
 ?>
 
 <form action="#" method="post">
-    <label>
-        <input type="text" name="action" value="create" hidden>
-    </label>
+  <label>
+    Name:
+    <input type="text" name="name">
+  </label>
 
-    <label>
-        Name:
-        <input type="text" name="name">
-    </label>
+  <label>
+    Aliases:
+    <input type="text" name="aliases">
+  </label>
 
-    <label>
-        Aliases:
-        <input type="text" name="aliases">
-    </label>
+  <label>
+    Related Items:
+    <input type="text" name="relatedItems">
+  </label>
 
-    <label>
-        Related Items:
-        <input type="text" name="relatedItems">
-    </label>
+  <label>
+    Rating:
+    <input type="number" name="rating" min="0" max="5" value="0">
+    <i class="bi bi-star"></i>
+    <i class="bi bi-star"></i>
+    <i class="bi bi-star"></i>
+    <i class="bi bi-star"></i>
+    <i class="bi bi-star"></i>
+  </label>
 
-    <label>
-        Rating:
-        <input type="number" name="rating" min="0" max="5" value="0">
-        <i class="bi bi-star"></i>
-        <i class="bi bi-star"></i>
-        <i class="bi bi-star"></i>
-        <i class="bi bi-star"></i>
-        <i class="bi bi-star"></i>
-    </label>
-
-    <button type="submit">Create!</button>
+  <button type="submit" name="action" value="create">Create!</button>
 </form>

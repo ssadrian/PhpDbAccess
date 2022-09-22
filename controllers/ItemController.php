@@ -9,28 +9,26 @@ function getAll(): array
     $qry = "SELECT guid, name, rating, aliases, related_items FROM items";
     $results = $db->query($qry);
 
-    if ($results === false) {
+    if (empty($results)) {
         return array();
     }
 
     $allItems = array();
     foreach ($results->fetch_all(MYSQLI_ASSOC) as $result) {
-        $item = new Item();
-        $item->constructFromValues(
-            $result["guid"],
-            $result["name"],
-            $result["rating"],
-            explode(",", $result["aliases"]),
-            explode(",", $result["related_items"])
+        $allItems[] = new Item(
+            $result["guid"], $result["name"], $result["rating"], $result["aliases"], $result["related_items"]
         );
-        $allItems[] = $item;
     }
 
     return $allItems;
 }
 
-function getByGuid(string $guid): ?Item
+function getByGuid(?string $guid): ?Item
 {
+    if (empty($guid)) {
+        return null;
+    }
+
     $qry = "SELECT guid, name, rating, aliases, related_items FROM items WHERE guid=?";
     $stmt = createPreparedStatement($qry);
 
@@ -39,24 +37,15 @@ function getByGuid(string $guid): ?Item
     }
 
     $stmt->execute([$guid]);
+    $result = $stmt->get_result()->fetch_all(MYSQLI_ASSOC)[0];
 
-    $results = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-    for ($i = 0; $i < sizeof($results); $i++) {
-        $result = $results[$i];
-
-        $item = new Item();
-        $item->constructFromValues(
-            $result["guid"],
-            $result["name"],
-            $result["rating"],
-            explode(",", $result["aliases"]),
-            explode(",", $result["related_items"])
-        );
-
-        return $item;
+    if (empty($result)) {
+        return null;
     }
 
-    return null;
+    return new Item(
+        $result["guid"], $result["name"], $result["rating"], $result["aliases"], $result["related_items"]
+    );
 }
 
 function getFiltered(Item $filterItem): array
@@ -86,18 +75,18 @@ function tryCreate(Item $item): bool
     return $stmt->execute();
 }
 
-function tryUpdate(string $guid, Item $newItem): bool
+function tryUpdate(?string $guid, ?Item $newItem): bool
 {
     $oldItem = getByGuid($guid);
 
-    if ($oldItem === null) {
+    if (empty($oldItem)) {
         return false;
     }
 
     $qry = "UPDATE items SET name = ?, rating = ?, aliases = ?, related_items = ? WHERE guid = ?";
     $stmt = createPreparedStatement($qry);
 
-    if ($stmt === false) {
+    if (empty($stmt)) {
         return false;
     }
 
@@ -115,7 +104,7 @@ function tryDelete($guid): bool
     $qry = "DELETE FROM items WHERE guid = ?";
     $stmt = createPreparedStatement($qry);
 
-    if ($stmt === false) {
+    if (empty($stmt)) {
         return false;
     }
 
