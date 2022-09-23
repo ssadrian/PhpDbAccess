@@ -50,5 +50,5 @@ if (!(empty($name) && empty($rating) && empty($aliases) && empty($relatedItems))
     <input type="text" name="success" value="<?php echo $isSuccess ?? 0 ?>">
   </label>
 
-  <button type="submit" name="action" value="update">Commit!</button>
+  <button class="btn" type="submit" name="action" value="update">Commit!</button>
 </form>

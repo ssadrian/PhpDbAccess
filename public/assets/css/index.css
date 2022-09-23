@@ -1,0 +1,8 @@
+:root {
+    --bg-primary: #8685ef;
+    --bg-secondary: #121212;
+}
+
+header > * button {
+    border: none;
+}

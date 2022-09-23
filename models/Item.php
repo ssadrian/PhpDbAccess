@@ -8,25 +8,38 @@ class Item
     public array $aliases;
     public array $relatedItems;
 
-    private bool $isInitialized = false;
-
     public function __construct(
-        string $guid,
-        string $name = null,
-        int    $rating = null,
-        string  $aliases = null,
-        string  $relatedItems = null)
+        string  $guid,
+        ?string $name,
+        ?int    $rating,
+        ?string $aliases,
+        ?string $relatedItems)
     {
         $this->guid = $guid;
         $this->name = $name ?? "";
         $this->rating = $rating ?? 0;
-        $this->aliases = explode(",", $aliases) ?? ["None"];
-        $this->relatedItems = explode(",", $relatedItems) ?? ["None"];
-        $this->isInitialized = true;
+        $this->aliases = empty($aliases) ? [] : explode(",", $aliases);
+        $this->relatedItems = empty($relatedItems) ? [] : explode(",", $relatedItems);
     }
 
-    public function isInitialized(): bool
+    function isInitialized(): bool
     {
-        return $this->isInitialized;
+        return !(
+            empty($this->guid) &&
+            empty($this->name) &&
+            empty($this->rating) &&
+            empty($this->aliases) &&
+            empty($this->relatedItems)
+        );
+    }
+
+    function hasSimilaritiesWith(Item $other): bool
+    {
+        return
+            str_contains($this->guid, $other->guid) ||
+            str_contains($this->name, $other->name) ||
+            $this->rating === $other->rating ||
+            str_contains(implode("", $this->aliases), implode("", $other->aliases)) ||
+            str_contains(implode("", $this->relatedItems), implode("", $other->relatedItems));
     }
 }

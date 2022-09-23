@@ -1,6 +1,16 @@
 <?php
 require_once "controllers/ItemController.php";
 require_once "models/Item.php";
+
+$filterGuid = $_POST["filter-guid"] ?? "";
+$filterName = $_POST["filter-name"] ?? "Item2";
+$filterRating = $_POST["filter-rating"] ?? 0;
+$filterAliases = $_POST["filter-aliases"] ?? "";
+$filterRelatedItems = $_POST["filter-related_items"] ?? "";
+
+$filterItem = new Item($filterGuid, $filterName, $filterRating, $filterAliases, $filterRelatedItems);
+$items = getFiltered($filterItem);
+
 ?>
 
 <table class="table table-hover">
@@ -14,8 +24,8 @@ require_once "models/Item.php";
           Guid
           <select name="filter-guid">
             <option value="" selected>All</option>
-            <option value="1">123</option>
-            <option value="2">456</option>
+            <option value="123">123</option>
+            <option value="456">456</option>
           </select>
         </label>
 
@@ -26,8 +36,8 @@ require_once "models/Item.php";
           Name
           <select name="filter-guid">
             <option value="" selected>All</option>
-            <option value="1">123</option>
-            <option value="2">456</option>
+            <option value="123">123</option>
+            <option value="456">456</option>
           </select>
 
           <i class="bi bi-sort-up disabled"></i>
@@ -38,8 +48,8 @@ require_once "models/Item.php";
           Aliases
           <select name="filter-guid">
             <option value="" selected>All</option>
-            <option value="1">123</option>
-            <option value="2">456</option>
+            <option value="123">123</option>
+            <option value="456">456</option>
           </select>
 
           <i class="bi bi-sort-up disabled"></i>
@@ -50,8 +60,8 @@ require_once "models/Item.php";
           Related Items
           <select name="filter-guid">
             <option value="" selected>All</option>
-            <option value="1">123</option>
-            <option value="2">456</option>
+            <option value="123">123</option>
+            <option value="456">456</option>
           </select>
 
           <i class="bi bi-sort-up disabled"></i>
@@ -62,30 +72,21 @@ require_once "models/Item.php";
           Rating
           <select name="filter-guid">
             <option value="" selected>All</option>
-            <option value="1">123</option>
-            <option value="2">456</option>
+            <option value="123">123</option>
+            <option value="456">456</option>
           </select>
 
           <i class="bi bi-sort-up disabled"></i>
         </label>
       </th>
       <th>
-        <button disabled>Clear filters</button>
+        <button class="btn btn-outline-primary" disabled>Clear filters</button>
       </th>
     </tr>
   </thead>
 
   <tbody>
       <?php
-      $filterGuid = $_POST["filter-guid"] ?? "";
-      $filterName = $_POST["filter-name"] ?? "";
-      $filterRating = $_POST["filter-rating"] ?? 0;
-      $filterAliases = $_POST["filter-aliases"] ?? "";
-      $filterRelatedItems = $_POST["filter-related_items"] ?? "";
-
-      $filterItem = new Item($filterGuid, $filterName, $filterRating, $filterAliases, $filterRelatedItems);
-      $items = $filterItem->isInitialized() ? getAll() : getFiltered($filterItem);
-
       for ($count = 0; $count < sizeof($items); $count++) {
           $item = $items[$count];
 
@@ -100,8 +101,8 @@ require_once "models/Item.php";
 <form action='#' method='post'>
     <input type='text' name='guid' value='" . $item->guid . "' hidden>
 
-    <button type='submit' name='action' value='update'>Edit</button>
-    <button type='submit' name='action' value='delete'>Delete</button>
+    <button class='btn btn-outline-dark' type='submit' name='action' value='update'>Edit</button>
+    <button class='btn btn-outline-danger' type='submit' name='action' value='delete'>Delete</button>
 </form>
 ";
           echo "</tr>";

@@ -18,7 +18,7 @@ function GUID(): string
     return sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
 }
 
-if (!(empty($name) || empty($aliases) || empty($relatedItems))) {
+if (!(empty($name) && empty($rating))) {
     $isSuccessful = tryCreate(new Item($guid, $name, $rating, $aliases, $relatedItems));
 }
 ?>
@@ -26,7 +26,7 @@ if (!(empty($name) || empty($aliases) || empty($relatedItems))) {
 <form action="#" method="post">
   <label>
     Name:
-    <input type="text" name="name">
+    <input type="text" name="name" required>
   </label>
 
   <label>
@@ -41,7 +41,7 @@ if (!(empty($name) || empty($aliases) || empty($relatedItems))) {
 
   <label>
     Rating:
-    <input type="number" name="rating" min="0" max="5" value="0">
+    <input type="number" name="rating" min="0" max="5" value="0" required>
     <i class="bi bi-star"></i>
     <i class="bi bi-star"></i>
     <i class="bi bi-star"></i>
@@ -49,5 +49,5 @@ if (!(empty($name) || empty($aliases) || empty($relatedItems))) {
     <i class="bi bi-star"></i>
   </label>
 
-  <button type="submit" name="action" value="create">Create!</button>
+  <button class="btn btn-outline-dark" type="submit" name="action" value="create">Create!</button>
 </form>

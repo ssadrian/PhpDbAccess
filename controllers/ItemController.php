@@ -51,13 +51,18 @@ function getByGuid(?string $guid): ?Item
 function getFiltered(Item $filterItem): array
 {
     $allItems = getAll();
-    return array_filter($allItems, function ($item) use ($filterItem) {
+
+    if (!$filterItem->isInitialized()) {
+        return $allItems;
+    }
+
+    return array_filter($allItems, function (Item $item) use ($filterItem) {
         return
-            $item->guid === $filterItem->guid ||
-            $item->name === $filterItem->name ||
+            str_contains($item->guid, $filterItem->guid) ||
+            str_contains($item->name, $filterItem->name) ||
             $item->rating === $filterItem->rating ||
-            $item->aliases === $filterItem->aliases ||
-            $item->relatedItems === $filterItem->relatedItems;
+            str_contains(implode(" ", $item->aliases), implode(" ", $filterItem->aliases)) ||
+            str_contains(implode(" ", $item->relatedItems), implode(" ", $filterItem->relatedItems));
     });
 }
 
