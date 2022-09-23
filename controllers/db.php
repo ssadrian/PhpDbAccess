@@ -17,7 +17,7 @@ $db->query("
 CREATE TABLE IF NOT EXISTS items (
     guid VARCHAR(36) PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    rating INT NOT NULL CHECK (rating >= 0),
+    rating INT NOT NULL,
     aliases VARCHAR(255) NOT NULL,
     related_items VARCHAR(255) NOT NULL
 )
