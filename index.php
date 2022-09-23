@@ -16,15 +16,19 @@
     <?php
     require_once "components/header.html";
 
-    $action = trim($_POST["action"] ?? "landpage");
+    $action = trim($_POST["action"] ?? "landpage") . ".php";
     $allowedActions = ["landpage", "create", "read", "update", "delete", "error"];
+    $allowedPages = [];
 
-    foreach (new DirectoryIterator("./pages") as $file) {
-        $fileName = $file->getFilename();
-        if (str_contains($fileName, $action)) {
-            require_once $file->getRealPath();
-            break;
-        }
+    foreach (new DirectoryIterator("./pages") as $page) {
+        $pageName = $page->getFilename();
+        $allowedPages[] = $pageName;
+    }
+
+    if (array_search($action, $allowedPages)) {
+        require_once "pages/" . $action;
+    } else {
+        require_once "pages/error.php";
     }
 
     require_once "components/footer.html";
