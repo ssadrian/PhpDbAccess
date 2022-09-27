@@ -51,28 +51,23 @@ function getByGuid(?string $guid): ?Item
 function getFiltered(Item $filterItem): array
 {
     $allItems = getAll();
-
-    if (!$filterItem->isInitialized()) {
-        return $allItems;
-    }
-
-    return array_filter($allItems, function (Item $item) use ($filterItem) {
-        return
-            str_contains($item->guid, $filterItem->guid) ||
-            str_contains($item->name, $filterItem->name) ||
-            $item->rating === $filterItem->rating ||
-            str_contains(implode(" ", $item->aliases), implode(" ", $filterItem->aliases)) ||
-            str_contains(implode(" ", $item->relatedItems), implode(" ", $filterItem->relatedItems));
+    return array_filter($allItems, function (Item $item) use ($filterItem): bool {
+        echo "<script>console.log(' " . $item->hasSimilaritiesWith($filterItem) .  "  ')</script>";
+        return $item->hasSimilaritiesWith($filterItem);
     });
 }
 
 function tryCreate(Item $item): bool
 {
+    if (!$item->isInitialized()) {
+        return false;
+    }
+
     $qry = "INSERT INTO items (guid, name, rating, aliases, related_items) VALUE (?, ?, ?, ?, ?);";
     $stmt = createPreparedStatement($qry);
 
-    $aliases = implode(',', $item->aliases);
-    $relatedItems = implode(',', $item->relatedItems);
+    $aliases = implode(",", $item->aliases);
+    $relatedItems = implode(",", $item->relatedItems);
 
     $stmt->bind_param("ssiss",
         $item->guid, $item->name, $item->rating, $aliases, $relatedItems);
@@ -84,7 +79,7 @@ function tryUpdate(?string $guid, ?Item $newItem): bool
 {
     $oldItem = getByGuid($guid);
 
-    if (empty($oldItem)) {
+    if (empty($oldItem) || empty($newItem) || !$newItem->isInitialized()) {
         return false;
     }
 
@@ -97,8 +92,10 @@ function tryUpdate(?string $guid, ?Item $newItem): bool
 
     $name = getNonEmptyValue($newItem->name, $oldItem->name);
     $rating = getNonEmptyValue($newItem->rating, $oldItem->rating);
-    $aliases = getNonEmptyValue(implode(",", $newItem->aliases), implode(",", $oldItem->aliases));
-    $relatedItems = getNonEmptyValue(implode(",", $newItem->relatedItems), implode(",", $oldItem->relatedItems));
+    $aliases = getNonEmptyValue(
+        implode(",", $newItem->aliases), implode(",", $oldItem->aliases));
+    $relatedItems = getNonEmptyValue(
+        implode(",", $newItem->relatedItems), implode(",", $oldItem->relatedItems));
 
     $stmt->bind_param("sisss", $name, $rating, $aliases, $relatedItems, $guid);
     return $stmt->execute();

@@ -15,7 +15,7 @@ if (empty($item)) {
 }
 
 if (!(empty($name) && empty($rating) && empty($aliases) && empty($relatedItems))) {
-    $item = new Item($guid, $name, $rating, $aliases, $relatedItems);
+    $item = new Item($name, $rating, $aliases, $relatedItems, $guid);
     $isSuccess = tryUpdate($guid, $item);
 }
 ?>

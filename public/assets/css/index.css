@@ -1,8 +1,13 @@
 :root {
-    --bg-primary: #8685ef;
-    --bg-secondary: #121212;
+  --bg-primary: #8685ef;
+  --bg-secondary: #121212;
 }
 
 header > * button {
-    border: none;
+  border: none;
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
 }
