@@ -6,9 +6,13 @@ require_once "models/Item.php";
 
 $filterGuid = $_POST["filter-guid"] ?? "";
 $filterName = $_POST["filter-name"] ?? "";
-$filterRating = intval($_POST["filter-rating"] ?? null);
+$filterRating = $_POST["filter-rating"] ?? -1;
 $filterAlias = $_POST["filter-alias"] ?? "";
 $filterRelatedItem = $_POST["filter-related-item"] ?? "";
+
+if ($filterRating === "") {
+  $filterRating = -1;
+}
 
 $filterItem = new Item($filterName, $filterRating, $filterAlias, $filterRelatedItem, $filterGuid);
 
@@ -89,9 +93,15 @@ function createOptionsFromValues(array $optionValues, mixed $valueToSelect = nul
                     Aliases
                     <select name="filter-alias" form="filter-form">
                         <?php
-                        createOptionsFromValues(array_map(function (Item $item) {
-                            return implode(",", $item->aliases);
-                        }, $items), $filterAlias);
+                        $aliases = [];
+
+                        foreach ($items as $item) {
+                          foreach ($item->aliases as $alias) {
+                            $aliases[] = $alias;
+                          }
+                        }
+
+                        createOptionsFromValues($aliases, $filterAlias);
                         ?>
                     </select>
 
@@ -104,9 +114,15 @@ function createOptionsFromValues(array $optionValues, mixed $valueToSelect = nul
                     Related Items
                     <select name="filter-related-item" form="filter-form">
                         <?php
-                        createOptionsFromValues(array_map(function (Item $item) {
-                            return implode(",", $item->relatedItems);
-                        }, $items), $filterRelatedItem);
+                        $relatedItems = [];
+
+                        foreach ($items as $item) {
+                            foreach ($item->relatedItems as $relatedItem) {
+                                $relatedItems[] = $relatedItem;
+                            }
+                        }
+
+                        createOptionsFromValues($relatedItems, $filterRelatedItem);
                         ?>
                     </select>
 

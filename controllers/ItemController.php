@@ -16,7 +16,7 @@ function getAll(): array
     $allItems = array();
     foreach ($results->fetch_all(MYSQLI_ASSOC) as $result) {
         $allItems[] = new Item(
-            $result["guid"], $result["name"], $result["rating"], $result["aliases"], $result["related_items"]
+            $result["name"], intval($result["rating"]), $result["aliases"], $result["related_items"], $result["guid"]
         );
     }
 
@@ -44,7 +44,7 @@ function getByGuid(?string $guid): ?Item
     }
 
     return new Item(
-        $result["guid"], $result["name"], $result["rating"], $result["aliases"], $result["related_items"]
+        $result["name"], $result["rating"], $result["aliases"], $result["related_items"], $result["guid"]
     );
 }
 
@@ -52,7 +52,6 @@ function getFiltered(Item $filterItem): array
 {
     $allItems = getAll();
     return array_filter($allItems, function (Item $item) use ($filterItem): bool {
-        echo "<script>console.log(' " . $item->hasSimilaritiesWith($filterItem) .  "  ')</script>";
         return $item->hasSimilaritiesWith($filterItem);
     });
 }

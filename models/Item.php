@@ -41,11 +41,11 @@ class Item
         global $purifier;
 
         return new Item(
-            $purifier->purify($this->guid),
             $purifier->purify($this->name),
-            $purifier->purify($this->rating),
+            intval($this->rating),
             implode(",", $purifier->purifyArray($this->aliases)),
-            implode(",", $purifier->purifyArray($this->relatedItems))
+            implode(",", $purifier->purifyArray($this->relatedItems)),
+            $purifier->purify($this->guid)
         );
     }
 
@@ -54,7 +54,7 @@ class Item
         return !(
             empty($this->guid) &&
             empty($this->name) &&
-            empty($this->rating) &&
+            (empty($this->rating) || $this->rating === -1) &&
             empty($this->aliases) &&
             empty($this->relatedItems)
         );
@@ -62,29 +62,22 @@ class Item
 
     function hasSimilaritiesWith(Item $other): bool
     {
-        $hasSimilarity = false;
-
         if (!empty($other->guid) && str_contains($this->guid, $other->guid)) {
-            $hasSimilarity = true;
+            return true;
         }
 
         if (!empty($other->name) && str_contains($this->name, $other->name)) {
-            $hasSimilarity = true;
+            return true;
         }
 
-        if (!empty($other->rating) || ($this->rating === $other->rating)) {
-            $hasSimilarity = true;
-        }
-
-        if (!empty($other->rating) || ($this->rating === $other->rating)) {
-            $hasSimilarity = true;
+        if (!empty($other->rating) && ($this->rating === $other->rating)) {
+            return true;
         }
 
         if (!empty($other->aliases)) {
             foreach ($other->aliases as $alias) {
-                if (in_array($this->aliases, $alias)) {
-                    $hasSimilarity = true;
-                    break;
+                if (in_array($alias, $this->aliases)) {
+                    return true;
                 }
             }
         }
@@ -92,12 +85,11 @@ class Item
         if (!empty($other->relatedItems)) {
             foreach ($other->relatedItems as $relatedItem) {
                 if (in_array($this->relatedItems, $relatedItem)) {
-                    $hasSimilarity = true;
-                    break;
+                    return true;
                 }
             }
         }
 
-        return $hasSimilarity;
+        return false;
     }
 }
