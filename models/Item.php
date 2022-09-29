@@ -1,6 +1,7 @@
 <?php
 
 require_once "utils/sanitizer.php";
+require_once "utils/helpers.php";
 
 class Item
 {
@@ -36,25 +37,12 @@ class Item
             mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
     }
 
-    function getAsPurifiedItem(): Item
-    {
-        global $purifier;
-
-        return new Item(
-            $purifier->purify($this->name),
-            intval($this->rating),
-            implode(",", $purifier->purifyArray($this->aliases)),
-            implode(",", $purifier->purifyArray($this->relatedItems)),
-            $purifier->purify($this->guid)
-        );
-    }
-
     function isInitialized(): bool
     {
         return !(
             empty($this->guid) &&
             empty($this->name) &&
-            (empty($this->rating) || $this->rating === -1) &&
+            ($this->rating === null || $this->rating === -1) &&
             empty($this->aliases) &&
             empty($this->relatedItems)
         );
@@ -70,13 +58,13 @@ class Item
             return true;
         }
 
-        if (!empty($other->rating) && ($this->rating === $other->rating)) {
+        if ($other->rating != -1 && ($this->rating === $other->rating)) {
             return true;
         }
 
         if (!empty($other->aliases)) {
             foreach ($other->aliases as $alias) {
-                if (in_array($alias, $this->aliases)) {
+                if (hasArrayAnySimilarValue($this->aliases, $alias)) {
                     return true;
                 }
             }
@@ -84,7 +72,7 @@ class Item
 
         if (!empty($other->relatedItems)) {
             foreach ($other->relatedItems as $relatedItem) {
-                if (in_array($this->relatedItems, $relatedItem)) {
+                if (hasArrayAnySimilarValue($this->relatedItems, $relatedItem)) {
                     return true;
                 }
             }

@@ -1,5 +1,6 @@
 <?php
 require_once "utils/sanitizer.php";
+require_once "utils/helpers.php";
 
 require_once "controllers/ItemController.php";
 require_once "models/Item.php";
@@ -7,44 +8,61 @@ require_once "models/Item.php";
 $filterGuid = $_POST["filter-guid"] ?? "";
 $filterName = $_POST["filter-name"] ?? "";
 $filterRating = $_POST["filter-rating"] ?? -1;
-$filterAlias = $_POST["filter-alias"] ?? "";
-$filterRelatedItem = $_POST["filter-related-item"] ?? "";
+$filterAlias = $_POST["filter-aliases"] ?? "";
+$filterRelatedItem = $_POST["filter-related-items"] ?? "";
 
 if ($filterRating === "") {
-  $filterRating = -1;
+    $filterRating = -1;
 }
 
-$filterItem = new Item($filterName, $filterRating, $filterAlias, $filterRelatedItem, $filterGuid);
+$filterItem = getPurifiedItem(new Item($filterName, $filterRating, $filterAlias, $filterRelatedItem, $filterGuid));
 
+$allItems = $filteredItems = getAll();
 if ($filterItem->isInitialized()) {
-    $items = getFiltered($filterItem);
-} else {
-    $items = getAll();
+    $filteredItems = getFiltered($filterItem);
 }
 
-function createOptionsFromValues(array $optionValues, mixed $valueToSelect = null): void
+function createDataListFromValues(array $optionValues, string $listName): void
 {
     global $purifier;
     $echoedValues = [];
 
-    $valueToSelect = $purifier->purify($valueToSelect);
-
-    echo "<option value=''></option>";
+    echo "<datalist id='$listName'>";
     foreach ($optionValues as $optionValue) {
         $optionValue = $purifier->purify($optionValue);
 
-        if (trim($optionValue) === "" || in_array($optionValue, $echoedValues)) {
+        if (in_array($optionValue, $echoedValues)) {
             continue;
         }
 
-        if ($valueToSelect == $optionValue) {
-            echo "<option value='$optionValue' selected>$optionValue</option>";
-        } else {
-            echo "<option value='$optionValue'>$optionValue</option>";
-        }
-
+        echo "<option value='$optionValue'></option>";
         $echoedValues[] = $optionValue;
     }
+    echo "</datalist>";
+}
+
+function createDropdownTextSelector(
+    array  $optionValues,
+    string $placeholder = "",
+    string $defaultValue = ""): void
+{
+    global $purifier;
+
+    $defaultValue = $purifier->purify($defaultValue);
+    $placeholder = $purifier->purify($placeholder);
+
+    $lowerPlaceholder = str_replace(" ", "-", strtolower($placeholder));
+    $inputName = "filter-$lowerPlaceholder";
+    $dataListName = "data-$lowerPlaceholder";
+
+    $formName = "filter-form";
+
+    echo "
+<label>
+  <input name='$inputName' placeholder='$placeholder' list='$dataListName' value='$defaultValue' form='$formName'>
+</label>";
+
+    createDataListFromValues($optionValues, $dataListName);
 }
 
 ?>
@@ -52,121 +70,109 @@ function createOptionsFromValues(array $optionValues, mixed $valueToSelect = nul
 <form id="filter-form" action="#" method="post"></form>
 
 <table class="table table-hover">
-    <thead>
-        <tr>
-            <th>
-                # <i class="bi bi-sort-up disabled"></i>
-            </th>
+  <thead>
+    <tr>
+      <th>
+        #
+      </th>
 
-            <th>
-                <label>
-                    Guid
-                    <select name="filter-guid" form="filter-form">
-                        <?php
-                        createOptionsFromValues(array_map(function (Item $item) {
-                            return $item->guid;
-                        }, $items), $filterGuid);
-                        ?>
-                    </select>
-                </label>
+      <th>
+          <?php
+          createDropdownTextSelector(
+              array_map(function (Item $item) {
+                  return $item->guid;
+              }, $allItems),
+              "Guid",
+              $filterGuid
+          );
+          ?>
+      </th>
 
-                <i class="bi bi-sort-up disabled"></i>
-            </th>
+      <th>
+          <?php
+          createDropdownTextSelector(
+              array_map(function (Item $item) {
+                  return $item->name;
+              }, $allItems),
+              "Name",
+              $filterName
+          );
+          ?>
+      </th>
 
-            <th>
-                <label>
-                    Name
-                    <select name="filter-name" form="filter-form">
-                        <?php
-                        createOptionsFromValues(array_map(function (Item $item) {
-                            return $item->name;
-                        }, $items), $filterName);
-                        ?>
-                    </select>
+      <th>
+          <?php
+          $aliases = [];
 
-                    <i class="bi bi-sort-up disabled"></i>
-                </label>
-            </th>
+          foreach ($allItems as $item) {
+              foreach ($item->aliases as $alias) {
+                  $aliases[] = $alias;
+              }
+          }
 
-            <th>
-                <label>
-                    Aliases
-                    <select name="filter-alias" form="filter-form">
-                        <?php
-                        $aliases = [];
+          createDropdownTextSelector(
+              $aliases,
+              "Aliases",
+              $filterAlias
+          );
+          ?>
+      </th>
 
-                        foreach ($items as $item) {
-                          foreach ($item->aliases as $alias) {
-                            $aliases[] = $alias;
-                          }
-                        }
+      <th>
+          <?php
+          $relatedItems = [];
 
-                        createOptionsFromValues($aliases, $filterAlias);
-                        ?>
-                    </select>
+          foreach ($allItems as $item) {
+              foreach ($item->relatedItems as $relatedItem) {
+                  $relatedItems[] = $relatedItem;
+              }
+          }
 
-                    <i class="bi bi-sort-up disabled"></i>
-                </label>
-            </th>
+          createDropdownTextSelector(
+              $relatedItems,
+              "Related Items",
+              $filterRelatedItem
+          );
+          ?>
+      </th>
 
-            <th>
-                <label>
-                    Related Items
-                    <select name="filter-related-item" form="filter-form">
-                        <?php
-                        $relatedItems = [];
+      <th>
+        <label>
+          Rating
+          <input type="range" class="form-range" name="filter-rating" min="-1" max="5" value="<?php echo $filterItem->rating; ?>"
+                 form="filter-form">
+          <datalist id="data-rating">
+              <?php
+              foreach (range(0, 5) as $count) {
+                  echo "<option value='$count'></option>";
+              }
+              ?>
+          </datalist>
+        </label>
+      </th>
 
-                        foreach ($items as $item) {
-                            foreach ($item->relatedItems as $relatedItem) {
-                                $relatedItems[] = $relatedItem;
-                            }
-                        }
+      <th class="text-center">
+        <button class="btn btn-outline-primary"
+                type="submit" form="filter-form" name="action" value="read">
+          Apply filters
+        </button>
+      </th>
+    </tr>
+  </thead>
 
-                        createOptionsFromValues($relatedItems, $filterRelatedItem);
-                        ?>
-                    </select>
+  <tbody>
+      <?php
+      foreach ($filteredItems as $count => $dirtyItem) {
+          $item = getPurifiedItem($dirtyItem);
 
-                    <i class="bi bi-sort-up disabled"></i>
-                </label>
-            </th>
-
-            <th>
-                <label>
-                    Rating
-                    <select name="filter-rating" form="filter-form">
-                        <?php
-                        createOptionsFromValues(array_map(function (Item $item) {
-                            return $item->rating;
-                        }, $items), $filterRating);
-                        ?>
-                    </select>
-
-                    <i class="bi bi-sort-up disabled"></i>
-                </label>
-            </th>
-
-            <th>
-                <button class="btn btn-outline-primary"
-                        type="submit" form="filter-form" name="action" value="read">Apply filters
-                </button>
-            </th>
-        </tr>
-    </thead>
-
-    <tbody>
-        <?php
-        for ($count = 0; $count < sizeof($items); $count++) {
-            $dirtyItem = $items[$count];
-            $item = $dirtyItem->getAsPurifiedItem();
-
-            echo "<tr>";
-            echo "<td>$count</td>";
-            echo "<td>$item->guid</td>";
-            echo "<td>$item->name</td>";
-            echo "<td>" . implode(", ", $item->aliases) . "</td>";
-            echo "<td>" . implode(", ", $item->relatedItems) . "</td>";
-            echo "<td>$item->rating</td>";
-            echo "<td>
+          echo "<tr>";
+          echo "<td>$count</td>";
+          echo "<td>$item->guid</td>";
+          echo "<td>$item->name</td>";
+          echo "<td>" . implode(", ", $item->aliases) . "</td>";
+          echo "<td>" . implode(", ", $item->relatedItems) . "</td>";
+          echo "<td>$item->rating</td>";
+          echo "<td class='text-center'>
 <form action='#' method='post'>
     <input type='text' name='guid' value='" . $dirtyItem->guid . "' hidden>
 
@@ -174,8 +180,8 @@ function createOptionsFromValues(array $optionValues, mixed $valueToSelect = nul
     <button class='btn btn-outline-danger' type='submit' name='action' value='delete'>Delete</button>
 </form>
 ";
-            echo "</tr>";
-        }
-        ?>
-    </tbody>
+          echo "</tr>";
+      }
+      ?>
+  </tbody>
 </table>

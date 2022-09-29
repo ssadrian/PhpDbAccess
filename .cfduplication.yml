@@ -1,0 +1,5 @@
+MinLineCount: 10
+
+IgnorePatterns:
+  - utils/HtmlPurifier/**
+  - public/libs/**

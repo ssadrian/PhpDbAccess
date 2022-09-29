@@ -5,11 +5,15 @@
   <meta name="viewport"
         content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="description" content="https://github.com/ssadrian/PhpDbAccess">
+  <meta name="theme-color" content="#EBE7E7"/>
 
-  <link rel="stylesheet" href="public/assets/libs/bootstrap-5.2.1/css/bootstrap.min.css">
-  <link rel="stylesheet" href="public/assets/libs/bootstrap-icons-1.9.1/bootstrap-icons.css">
+  <link rel="stylesheet" href="public/libs/bootstrap-5.2.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="public/libs/bootstrap-icons-1.9.1/bootstrap-icons.css">
 
-  <link rel="stylesheet" href="public/assets/css/index.css">
+  <link rel="stylesheet" href="public/css/index.css">
+  <link rel="stylesheet" href="public/css/create.css">
+  <link rel="stylesheet" href="public/css/landpage.css">
 
   <title>Document</title>
 </head>

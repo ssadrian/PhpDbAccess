@@ -3,11 +3,16 @@
   --bg-secondary: #121212;
 }
 
+body {
+  width: 100vw;
+  height: 100vh;
+  overflow-x: hidden;
+}
+
 header > * button {
   border: none;
 }
 
-body {
-  width: 100vw;
-  height: 100vh;
+.content {
+  padding: .75rem 2.5rem;
 }
