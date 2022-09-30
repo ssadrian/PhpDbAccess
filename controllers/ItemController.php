@@ -1,6 +1,6 @@
 <?php
 
-require_once "db.php";
+require_once "database/db.php";
 require_once "models/Item.php";
 
 function getAll(): array
