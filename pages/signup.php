@@ -16,10 +16,10 @@
   </div>
 
   <div class="mb-3">
-    <label for="input-nickname" class="col-sm-2 col-form-label">Nickname</label>
+    <label for="input-username" class="col-sm-2 col-form-label">Username</label>
 
     <div class="col-sm-10">
-      <input id="input-nickname" class="form-control">
+      <input id="input-username" class="form-control">
     </div>
   </div>
 

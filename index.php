@@ -24,7 +24,6 @@
   <div class="content">
       <?php
       $action = trim($_POST["action"] ?? "landpage") . ".php";
-      $allowedActions = ["landpage", "create", "read", "update", "delete", "error"];
       $allowedPages = [];
 
       foreach (new DirectoryIterator("./pages") as $page) {

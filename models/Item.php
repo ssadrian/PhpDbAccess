@@ -18,23 +18,11 @@ class Item
         ?string $relatedItems,
         ?string $guid)
     {
-        $this->guid = trim($guid ?? Item::GUID());
+        $this->guid = trim($guid ?? GUID());
         $this->name = trim($name ?? "");
         $this->rating = $rating;
         $this->aliases = empty(trim($aliases)) ? [] : explode(",", trim($aliases));
         $this->relatedItems = empty(trim($relatedItems)) ? [] : explode(",", trim($relatedItems));
-    }
-
-    static function GUID(): string
-    {
-        if (function_exists('com_create_guid')) {
-            return trim(com_create_guid(), '{}');
-        }
-
-        return sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X',
-            mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535),
-            mt_rand(16384, 20479), mt_rand(32768, 49151),
-            mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
     }
 
     function isInitialized(): bool

@@ -3,7 +3,7 @@
 require_once "controllers/ItemController.php";
 
 $guid = $_POST["guid"] ?? "";
-$isSuccessful = tryDelete($guid);
+$isSuccessful = ItemController::getInstance()->tryDelete($guid);
 ?>
 
 <form action="#" method="post" hidden>
