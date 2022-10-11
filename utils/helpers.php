@@ -16,6 +16,19 @@ function getPurifiedItem($dirtyItem): Item
     );
 }
 
+function getPurifiedUser(User $dirtyUser): User {
+    global $purifier;
+
+    return new User(
+        $dirtyUser->guid,
+        $purifier->purify($dirtyUser->name),
+        $purifier->purify($dirtyUser->surname),
+        $purifier->purify($dirtyUser->username),
+        $purifier->purify($dirtyUser->email),
+        $dirtyUser->password
+    );
+}
+
 function hasArrayAnySimilarValue(array $array, mixed $value): bool
 {
     if ($value === null) {

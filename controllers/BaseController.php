@@ -2,7 +2,7 @@
 
 abstract class BaseController
 {
-    protected $instance = null;
+    protected mixed $instance = null;
 
     public abstract static function getInstance();
 

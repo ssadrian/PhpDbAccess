@@ -6,7 +6,7 @@ require_once "utils/helpers.php";
 
 class ItemController extends BaseController
 {
-    public static function getInstance()
+    public static function getInstance(): ItemController
     {
         if (empty($instance)) {
             $instance = new ItemController();
