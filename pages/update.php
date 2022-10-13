@@ -2,8 +2,10 @@
 require_once "utils/helpers.php";
 require_once "controllers/ItemController.php";
 
+$itemController = ItemController::getInstance();
+
 $guid = $_POST["guid"] ?? "";
-$item = getPurifiedItem(getByGuid($guid));
+$item = getPurifiedItem($itemController->getByGuid($guid));
 
 $name = $_POST["name"] ?? "";
 $rating = $_POST["rating"] ?? "";
@@ -17,7 +19,7 @@ if (empty($item)) {
 
 if (!(empty($name) && empty($rating) && empty($aliases) && empty($relatedItems))) {
     $item = getPurifiedItem(new Item($name, $rating, $aliases, $relatedItems, $guid));
-    $isSuccess = tryUpdate($guid, $item);
+    $isSuccess = $itemController->tryUpdate($guid, $item);
 }
 ?>
 

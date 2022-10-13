@@ -1,6 +1,7 @@
 <?php
 
 require_once "database/db.php";
+require_once "BaseController.php";
 require_once "models/Item.php";
 require_once "utils/helpers.php";
 
@@ -62,6 +63,10 @@ class ItemController extends BaseController
 
     function getFiltered(mixed $filterItem): array
     {
+        if ($filterItem instanceof Item === false) {
+            return array();
+        }
+
         $allItems = $this->getAll();
         return array_filter($allItems, function (Item $item) use ($filterItem): bool {
             return $item->hasSimilaritiesWith($filterItem);
@@ -70,7 +75,7 @@ class ItemController extends BaseController
 
     function tryCreate(mixed $item): bool
     {
-        if (!$item->isInitialized()) {
+        if (($item instanceof Item || $item->isInitialized()) === false) {
             return false;
         }
 
@@ -88,6 +93,10 @@ class ItemController extends BaseController
 
     function tryUpdate(?string $guid, mixed $newItem): bool
     {
+        if ($newItem instanceof Item === false) {
+            return false;
+        }
+
         $oldItem = $this->getByGuid($guid);
 
         if (empty($oldItem) || empty($newItem) || !$newItem->isInitialized()) {

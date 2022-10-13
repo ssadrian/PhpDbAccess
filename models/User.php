@@ -1,6 +1,5 @@
 <?php
 
-require_once "utils/sanitizer.php";
 require_once "utils/helpers.php";
 
 class User
@@ -13,24 +12,23 @@ class User
     public string $password;
 
     public function __construct(
-        ?string $guid,
         ?string $name,
         ?string $surname,
         ?string $username,
         ?string $email,
-        ?string $password)
+        ?string $password,
+        ?string $guid)
     {
-        $this->guid = empty($guid) ? GUID() : $guid;
+        $this->guid = empty($guid) ? "" : $guid;
         $this->name = empty($name) ? "" : $name;
         $this->surname = empty($surname) ? "" : $surname;
-        $this->username = $username;
-        $this->email = $email;
-        $this->password = $password;
+        $this->username = empty($username) ? "" : $username;
+        $this->email = empty($email) ? "" : $email;
+        $this->password = empty($password) ? "" : $password;
     }
 
     function isInitialized(): bool {
         return !(
-            empty($this->guid) &&
             empty($this->name) &&
             empty($this->surname) &&
             empty($this->username) &&

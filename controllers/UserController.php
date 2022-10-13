@@ -1,6 +1,7 @@
 <?php
 
 require_once "database/db.php";
+require_once "BaseController.php";
 require_once "models/Item.php";
 require_once "utils/helpers.php";
 
@@ -29,18 +30,20 @@ class UserController extends BaseController
         }
 
         return new User(
-            $result[0]->guid,
             $result[0]->name,
             $result[0]->surname,
             $result[0]->username,
             $result[0]->email,
             $result[0]->password,
+            $result[0]->guid
         );
     }
 
     function tryCreate(mixed $item): bool
     {
-        if (!$item instanceof User) {
+        if ($item instanceof User === false) {
+            return false;
+        } elseif (isPasswordStrong($item->password) === false) {
             return false;
         }
 

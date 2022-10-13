@@ -1,7 +1,6 @@
 <?php
 
 require_once "sanitizer.php";
-require_once "sanitizer.php";
 
 function getPurifiedItem($dirtyItem): Item
 {
@@ -16,17 +15,49 @@ function getPurifiedItem($dirtyItem): Item
     );
 }
 
-function getPurifiedUser(User $dirtyUser): User {
+function getPurifiedUser(User $dirtyUser): User
+{
     global $purifier;
 
     return new User(
-        $dirtyUser->guid,
         $purifier->purify($dirtyUser->name),
         $purifier->purify($dirtyUser->surname),
         $purifier->purify($dirtyUser->username),
         $purifier->purify($dirtyUser->email),
-        $dirtyUser->password
+        $dirtyUser->password,
+        $dirtyUser->guid
     );
+}
+
+function getCompleteUser(User $user): User {
+    return new User(
+        $user->name,
+        $user->surname,
+        $user->username,
+        $user->email,
+        password_hash($user->password, PASSWORD_ARGON2ID),
+        empty($user->guid) ? GUID() : $user->guid
+    );
+}
+
+function isPasswordStrong(string $pwd): bool
+{
+    if (strlen($pwd) < 8) {
+        return false;
+    }
+
+    $isPasswordStrong = true;
+    $containsDigits = preg_match('/.*\d.*/x', $pwd);
+    $containsSpecialChars = preg_match('/.*\W.*/x', $pwd);
+    $containsUppercase = preg_match('/.*[A-Z].*/x', $pwd);
+
+    if (($containsDigits || $containsSpecialChars || $containsUppercase) === false) {
+        $isPasswordStrong = false;
+    } elseif (strpos(file_get_contents("database/rockyou.txt"), $pwd)) {
+        $isPasswordStrong = false;
+    }
+
+    return $isPasswordStrong;
 }
 
 function hasArrayAnySimilarValue(array $array, mixed $value): bool
@@ -44,7 +75,7 @@ function hasArrayAnySimilarValue(array $array, mixed $value): bool
         return true;
     }
 
-    foreach($array as $element) {
+    foreach ($array as $element) {
         if (is_string($element)) {
             $element = strtolower($element);
         }

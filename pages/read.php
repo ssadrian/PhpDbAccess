@@ -5,6 +5,8 @@ require_once "utils/helpers.php";
 require_once "controllers/ItemController.php";
 require_once "models/Item.php";
 
+$itemController = ItemController::getInstance();
+
 $filterGuid = $_POST["filter-guid"] ?? "";
 $filterName = $_POST["filter-name"] ?? "";
 $filterRating = $_POST["filter-rating"] ?? -1;
@@ -17,9 +19,9 @@ if ($filterRating === "") {
 
 $filterItem = getPurifiedItem(new Item($filterName, $filterRating, $filterAlias, $filterRelatedItem, $filterGuid));
 
-$allItems = $filteredItems = getAll();
+$allItems = $filteredItems = $itemController->getAll();
 if ($filterItem->isInitialized()) {
-    $filteredItems = getFiltered($filterItem);
+    $filteredItems = $itemController->getFiltered($filterItem);
 }
 
 function createDataListFromValues(array $optionValues, string $listName): void

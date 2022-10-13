@@ -5,6 +5,8 @@ require_once "utils/helpers.php";
 require_once "controllers/ItemController.php";
 require_once "models/Item.php";
 
+$itemController = ItemController::getInstance();
+
 $name = $_POST["name"] ?? "";
 $rating = $_POST["rating"] ?? 0;
 $aliases = $_POST["aliases"] ?? "";
@@ -12,7 +14,7 @@ $relatedItems = $_POST["related-items"] ?? "";
 
 if (!(empty($name) && empty($rating))) {
     $dirtyItem = new Item($name, $rating, $aliases, $relatedItems, null);
-    $isSuccessful = tryCreate(getPurifiedItem($dirtyItem));
+    $isSuccessful = $itemController->tryCreate(getPurifiedItem($dirtyItem));
 }
 ?>
 
