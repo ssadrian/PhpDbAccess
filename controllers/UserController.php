@@ -29,13 +29,14 @@ class UserController extends BaseController
             return null;
         }
 
+        $result = $result[0];
         return new User(
-            $result[0]->name,
-            $result[0]->surname,
-            $result[0]->username,
-            $result[0]->email,
-            $result[0]->password,
-            $result[0]->guid
+            $result->name,
+            $result->surname,
+            $result->username,
+            $result->email,
+            $result->password,
+            $result->guid
         );
     }
 
@@ -98,14 +99,37 @@ class UserController extends BaseController
         return $cartItems;
     }
 
-    function getAll()
+    function getFiltered(mixed $filterItem): array
     {
-        throw new Exception("Method is obsolete for this class");
+        if ($filterItem instanceof User === false) {
+            return array();
+        }
+
+        $allUsers = $this->getAll();
+        return array_filter($allUsers, function (User $user) use ($filterItem): bool {
+            return $user->hasSimilaritiesWith($filterItem);
+        });
     }
 
-    function getFiltered(mixed $filterItem)
+    function getAll(): array
     {
-        throw new Exception("Method is obsolete for this class");
+        global $db;
+        $qry = "SELECT guid, name, surname, username, email, password FROM users";
+        $results = $db->query($qry);
+
+        if (empty($results)) {
+            return array();
+        }
+
+        $allUsers = array();
+        foreach ($results->fetch_all(MYSQLI_ASSOC) as $result) {
+            $allUsers[] = new User(
+                $result["name"], $result["surname"], $result["username"],
+                $result["email"], $result["password"], $result["guid"]
+            );
+        }
+
+        return $allUsers;
     }
 
     function tryUpdate(?string $guid, mixed $newItem): bool

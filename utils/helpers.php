@@ -29,15 +29,15 @@ function getPurifiedUser(User $dirtyUser): User
     );
 }
 
-function getCompleteUser(User $user): User {
-    return new User(
-        $user->name,
-        $user->surname,
-        $user->username,
-        $user->email,
-        password_hash($user->password, PASSWORD_ARGON2ID),
-        empty($user->guid) ? GUID() : $user->guid
-    );
+function getCompleteUser(User $user): User
+{
+    $newUser = new User($user->name, $user->surname, $user->username, $user->email, $user->password, empty($user->guid) ? GUID() : $user->guid);
+
+    if ($user->isPasswordEncrypted === false) {
+        $newUser->encryptPassword();
+    }
+
+    return $newUser;
 }
 
 function isPasswordStrong(string $pwd): bool
@@ -46,6 +46,8 @@ function isPasswordStrong(string $pwd): bool
         return false;
     }
 
+    $pwdFile = "assets/rockyou.txt";
+
     $isPasswordStrong = true;
     $containsDigits = preg_match('/.*\d.*/x', $pwd);
     $containsSpecialChars = preg_match('/.*\W.*/x', $pwd);
@@ -53,11 +55,25 @@ function isPasswordStrong(string $pwd): bool
 
     if (($containsDigits || $containsSpecialChars || $containsUppercase) === false) {
         $isPasswordStrong = false;
-    } elseif (strpos(file_get_contents("database/rockyou.txt"), $pwd)) {
+    } elseif (strpos(file_get_contents($pwdFile), $pwd)) {
         $isPasswordStrong = false;
     }
 
     return $isPasswordStrong;
+}
+
+function isUserAdmin(User $user): bool
+{
+    $adminFile = "assets/admins.json";
+    $json = json_decode(file_get_contents($adminFile), true);
+    $adminGuids = array();
+
+    foreach ($json as $entry) {
+        $adminGuids[] = $entry["guid"];
+    }
+
+    var_dump($user->guid);
+    return in_array($user->guid, $adminGuids);
 }
 
 function hasArrayAnySimilarValue(array $array, mixed $value): bool
