@@ -8,7 +8,7 @@
   <meta name="description" content="https://github.com/ssadrian/PhpDbAccess">
   <meta name="theme-color" content="#EBE7E7"/>
 
-  <link rel="stylesheet" href="public/libs/bootstrap-5.2.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="public/libs/bootstrap-5.2.2/css/bootstrap.min.css">
   <link rel="stylesheet" href="public/libs/bootstrap-icons-1.9.1/bootstrap-icons.css">
 
   <link rel="stylesheet" href="public/css/index.css">

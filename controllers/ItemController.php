@@ -104,7 +104,7 @@ class ItemController extends BaseController
             return false;
         }
 
-        $qry = "UPDATE items SET name = ?, rating = ?, aliases = ?, price = ?, related_items = ? WHERE guid = ?";
+        $qry = "UPDATE items SET name = ?, rating = ?, price = ?, aliases = ?, related_items = ? WHERE guid = ?";
         $stmt = createPreparedStatement($qry);
 
         if (empty($stmt)) {

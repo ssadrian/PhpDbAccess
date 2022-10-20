@@ -58,6 +58,8 @@ if ($filterItem->isInitialized()) {
     $filteredItems = $itemController->getFiltered($filterItem);
 }
 
+$totalPrice = 0;
+
 ?>
 
 <form id="filter-form" action="#" method="post"></form>
@@ -174,6 +176,7 @@ if ($filterItem->isInitialized()) {
       <?php
       foreach ($filteredItems as $count => $dirtyItem) {
           $item = getPurifiedItem($dirtyItem);
+          $totalPrice += $item->price;
 
           echo "<tr>";
           echo "<td>$count</td>";
@@ -200,6 +203,17 @@ if ($filterItem->isInitialized()) {
           echo "</tr>";
       }
       ?>
+
+    <tr>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th class="text-center">Total:</th>
+      <th><?php echo $totalPrice; ?>$</th>
+    </tr>
   </tbody>
 </table>
 
