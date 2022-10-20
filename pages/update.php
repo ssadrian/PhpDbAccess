@@ -1,6 +1,6 @@
 <?php
-require_once "utils/helpers.php";
-require_once "controllers/ItemController.php";
+require_once "../utils/helpers.php";
+require_once "../controllers/ItemController.php";
 
 $itemController = ItemController::getInstance();
 

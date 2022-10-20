@@ -47,7 +47,7 @@ function isPasswordStrong(string $pwd): bool
         return false;
     }
 
-    $pwdFile = "assets/rockyou.txt";
+    $pwdFile = "../assets/rockyou.txt";
 
     $isPasswordStrong = true;
     $containsDigits = preg_match("/.*\d.*/", $pwd);
@@ -65,7 +65,7 @@ function isPasswordStrong(string $pwd): bool
 
 function isUserAdmin(User $user): bool
 {
-    $adminFile = "assets/admins.json";
+    $adminFile = "../assets/admins.json";
     $json = json_decode(file_get_contents($adminFile), true);
     $adminGuids = array();
 

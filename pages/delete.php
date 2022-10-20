@@ -1,6 +1,6 @@
 <?php
 
-require_once "controllers/ItemController.php";
+require_once "../controllers/ItemController.php";
 
 $guid = $_POST["guid"] ?? "";
 $isSuccessful = ItemController::getInstance()->tryDelete($guid);

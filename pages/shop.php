@@ -1,15 +1,15 @@
 <?php
 
-require_once "utils/helpers.php";
+require_once "../utils/helpers.php";
 
 if (!($_SESSION["isLogged"] ?? false)) {
     returnToLandPage();
 }
 
-require_once "controllers/UserController.php";
+require_once "../controllers/UserController.php";
 $userController = UserController::getInstance();
 
-require_once "controllers/ItemController.php";
+require_once "../controllers/ItemController.php";
 $itemController = ItemController::getInstance();
 
 $credentials = $_SESSION["credentials"] ?? "";

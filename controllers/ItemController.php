@@ -1,9 +1,9 @@
 <?php
 
-require_once "database/db.php";
+require_once "../database/db.php";
 require_once "BaseController.php";
-require_once "models/Item.php";
-require_once "utils/helpers.php";
+require_once "../models/Item.php";
+require_once "../utils/helpers.php";
 
 class ItemController extends BaseController
 {

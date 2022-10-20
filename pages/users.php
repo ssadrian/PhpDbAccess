@@ -1,9 +1,9 @@
 <?php
-require_once "utils/sanitizer.php";
-require_once "utils/helpers.php";
+require_once "../utils/sanitizer.php";
+require_once "../utils/helpers.php";
 
-require_once "controllers/UserController.php";
-require_once "models/User.php";
+require_once "../controllers/UserController.php";
+require_once "../models/User.php";
 
 $userController = UserController::getInstance();
 

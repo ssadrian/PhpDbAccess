@@ -1,7 +1,7 @@
 <?php
 
-require_once "utils/sanitizer.php";
-require_once "utils/helpers.php";
+require_once "../utils/sanitizer.php";
+require_once "../utils/helpers.php";
 
 class Item
 {
