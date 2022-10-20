@@ -9,6 +9,7 @@ $item = getPurifiedItem($itemController->getByGuid($guid));
 
 $name = $_POST["name"] ?? "";
 $rating = $_POST["rating"] ?? "";
+$price = $_POST["price"] ?? "";
 $aliases = $_POST["aliases"] ?? "";
 $relatedItems = $_POST["related-items"] ?? "";
 
@@ -18,7 +19,7 @@ if (empty($item)) {
 }
 
 if (!(empty($name) && empty($rating) && empty($aliases) && empty($relatedItems))) {
-    $item = getPurifiedItem(new Item($name, $rating, $aliases, $relatedItems, $guid));
+    $item = getPurifiedItem(new Item($name, $rating, $price, $aliases, $relatedItems, $guid));
     $isSuccess = $itemController->tryUpdate($guid, $item);
 }
 ?>
@@ -61,6 +62,14 @@ if (!(empty($name) && empty($rating) && empty($aliases) && empty($relatedItems))
 
     <div class="col-sm-10 mb-3">
       <input id="edit-rating" class="form-control" type="number" name="rating" value="<?php echo $item->rating ?>">
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <label for="edit-rating" class="col-sm-2 col-form-label">Price</label>
+
+    <div class="col-sm-10 mb-3">
+      <input id="edit-rating" class="form-control" type="number" name="rating" value="<?php echo $item->price ?>">
     </div>
   </div>
 

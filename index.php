@@ -40,5 +40,21 @@
   </div>
 
     <?php require_once "components/footer.html"; ?>
+
+  <script>
+      const allRanges = document.querySelectorAll(".range-label");
+
+      allRanges.forEach(range => {
+          const input = range.querySelector("input");
+          const output = range.querySelector(".range-output");
+          output.innerText = "Any";
+
+          input.oninput = () => {
+              output.innerText = input.value < 0
+                  ? "Any"
+                  : input.value;
+          };
+      });
+  </script>
 </body>
 </html>

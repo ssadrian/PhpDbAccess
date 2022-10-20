@@ -9,11 +9,12 @@ $itemController = ItemController::getInstance();
 
 $name = $_POST["name"] ?? "";
 $rating = $_POST["rating"] ?? 0;
+$price = $_POST["rating"] ?? 0;
 $aliases = $_POST["aliases"] ?? "";
 $relatedItems = $_POST["related-items"] ?? "";
 
 if (!(empty($name) && empty($rating))) {
-    $dirtyItem = new Item($name, $rating, $aliases, $relatedItems, null);
+    $dirtyItem = new Item($name, $rating, $price, $aliases, $relatedItems, null);
     $isSuccessful = $itemController->tryCreate(getPurifiedItem($dirtyItem));
 }
 ?>
@@ -48,6 +49,14 @@ if (!(empty($name) && empty($rating))) {
 
     <div class="col-sm-10">
       <input id="input-rating" class="form-control" type="number" name="rating" min="0" value="0" required>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <label for="input-price" class="col-sm-2 col-form-label">Price</label>
+
+    <div class="col-sm-10">
+      <input id="input-price" class="form-control" type="number" name="price" min="0" value="0" required>
     </div>
   </div>
 

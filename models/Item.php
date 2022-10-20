@@ -8,12 +8,14 @@ class Item
     public string $guid;
     public string $name;
     public ?int $rating;
+    public int $price;
     public array $aliases;
     public array $relatedItems;
 
     public function __construct(
         ?string $name,
         ?int    $rating,
+        ?int    $price,
         ?string $aliases,
         ?string $relatedItems,
         ?string $guid)
@@ -21,6 +23,7 @@ class Item
         $this->guid = trim($guid ?? GUID());
         $this->name = trim($name ?? "");
         $this->rating = $rating;
+        $this->price = $price;
         $this->aliases = empty(trim($aliases)) ? [] : explode(",", trim($aliases));
         $this->relatedItems = empty(trim($relatedItems)) ? [] : explode(",", trim($relatedItems));
     }

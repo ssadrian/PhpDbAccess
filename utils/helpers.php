@@ -2,13 +2,14 @@
 
 require_once "sanitizer.php";
 
-function getPurifiedItem($dirtyItem): Item
+function getPurifiedItem(Item $dirtyItem): Item
 {
     global $purifier;
 
     return new Item(
         $purifier->purify($dirtyItem->name),
         intval($dirtyItem->rating),
+        intval($dirtyItem->price),
         implode(",", $purifier->purifyArray($dirtyItem->aliases)),
         implode(",", $purifier->purifyArray($dirtyItem->relatedItems)),
         $purifier->purify($dirtyItem->guid)

@@ -10,6 +10,7 @@ $itemController = ItemController::getInstance();
 $filterGuid = $_POST["filter-guid"] ?? "";
 $filterName = $_POST["filter-name"] ?? "";
 $filterRating = $_POST["filter-rating"] ?? -1;
+$filterPrice = $_POST["filter-price"] ?? -1;
 $filterAlias = $_POST["filter-aliases"] ?? "";
 $filterRelatedItem = $_POST["filter-related-items"] ?? "";
 
@@ -17,7 +18,11 @@ if ($filterRating === "") {
     $filterRating = -1;
 }
 
-$filterItem = getPurifiedItem(new Item($filterName, $filterRating, $filterAlias, $filterRelatedItem, $filterGuid));
+if ($filterPrice === "") {
+    $filterPrice = -1;
+}
+
+$filterItem = getPurifiedItem(new Item($filterName, $filterRating, $filterPrice, $filterAlias, $filterRelatedItem, $filterGuid));
 
 $allItems = $filteredItems = $itemController->getAll();
 if ($filterItem->isInitialized()) {
@@ -96,14 +101,30 @@ if ($filterItem->isInitialized()) {
       </th>
 
       <th>
-        <label>
-          Rating
+        <label class="range-label">
+          Rating <span class="range-output"></span>
           <input type="range" class="form-range" name="filter-rating" min="-1" max="5"
                  value="<?php echo $filterItem->rating; ?>"
                  form="filter-form">
           <datalist id="data-rating">
               <?php
               foreach (range(0, 5) as $count) {
+                  echo "<option value='$count'></option>";
+              }
+              ?>
+          </datalist>
+        </label>
+      </th>
+
+      <th>
+        <label class="range-label">
+          Price <span class="range-output"></span>
+          <input type="range" class="form-range" name="filter-price" min="-1" max="1000"
+                 value="<?php echo $filterItem->price; ?>"
+                 form="filter-form">
+          <datalist id="data-price">
+              <?php
+              foreach (range(0, 1000) as $count) {
                   echo "<option value='$count'></option>";
               }
               ?>
@@ -133,6 +154,7 @@ if ($filterItem->isInitialized()) {
           echo "<td>" . implode(", ", $item->aliases) . "</td>";
           echo "<td>" . implode(", ", $item->relatedItems) . "</td>";
           echo "<td>$item->rating</td>";
+          echo "<td>$item->price</td>";
           if ($_SESSION["isLogged"] ?? false) {
               echo "<td class='text-center'>
 <form action='#' method='post'>

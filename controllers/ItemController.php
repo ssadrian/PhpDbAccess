@@ -19,7 +19,7 @@ class ItemController extends BaseController
     function getAll(): array
     {
         global $db;
-        $qry = "SELECT guid, name, rating, aliases, related_items FROM items";
+        $qry = "SELECT guid, name, rating, price, aliases, related_items FROM items";
         $results = $db->query($qry);
 
         if (empty($results)) {
@@ -29,7 +29,8 @@ class ItemController extends BaseController
         $allItems = array();
         foreach ($results->fetch_all(MYSQLI_ASSOC) as $result) {
             $allItems[] = new Item(
-                $result["name"], intval($result["rating"]), $result["aliases"], $result["related_items"], $result["guid"]
+                $result["name"], intval($result["rating"]), intval($result["price"]),
+                $result["aliases"], $result["related_items"], $result["guid"]
             );
         }
 
@@ -42,7 +43,7 @@ class ItemController extends BaseController
             return null;
         }
 
-        $qry = "SELECT guid, name, rating, aliases, related_items FROM items WHERE guid=?";
+        $qry = "SELECT guid, name, rating, price, aliases, related_items FROM items WHERE guid=?";
         $stmt = createPreparedStatement($qry);
 
         if ($stmt === false) {
@@ -57,7 +58,7 @@ class ItemController extends BaseController
         }
 
         return new Item(
-            $result["name"], $result["rating"], $result["aliases"], $result["related_items"], $result["guid"]
+            $result["name"], $result["rating"], $result["price"], $result["aliases"], $result["related_items"], $result["guid"]
         );
     }
 
@@ -79,14 +80,14 @@ class ItemController extends BaseController
             return false;
         }
 
-        $qry = "INSERT INTO items (guid, name, rating, aliases, related_items) VALUE (?, ?, ?, ?, ?);";
+        $qry = "INSERT INTO items (guid, name, rating, price, aliases, related_items) VALUE (?, ?, ?, ?, ?, ?);";
         $stmt = createPreparedStatement($qry);
 
         $aliases = implode(",", $item->aliases);
         $relatedItems = implode(",", $item->relatedItems);
 
-        $stmt->bind_param("ssiss",
-            $item->guid, $item->name, $item->rating, $aliases, $relatedItems);
+        $stmt->bind_param("ssiiss",
+            $item->guid, $item->name, $item->rating, $item->price, $aliases, $relatedItems);
 
         return $stmt->execute();
     }
@@ -103,7 +104,7 @@ class ItemController extends BaseController
             return false;
         }
 
-        $qry = "UPDATE items SET name = ?, rating = ?, aliases = ?, related_items = ? WHERE guid = ?";
+        $qry = "UPDATE items SET name = ?, rating = ?, aliases = ?, price = ?, related_items = ? WHERE guid = ?";
         $stmt = createPreparedStatement($qry);
 
         if (empty($stmt)) {
@@ -112,12 +113,13 @@ class ItemController extends BaseController
 
         $name = getNonEmptyValue($newItem->name, $oldItem->name);
         $rating = getNonEmptyValue($newItem->rating, $oldItem->rating);
+        $price = getNonEmptyValue($newItem->price, $oldItem->price);
         $aliases = getNonEmptyValue(
             implode(",", $newItem->aliases), implode(",", $oldItem->aliases));
         $relatedItems = getNonEmptyValue(
             implode(",", $newItem->relatedItems), implode(",", $oldItem->relatedItems));
 
-        $stmt->bind_param("sisss", $name, $rating, $aliases, $relatedItems, $guid);
+        $stmt->bind_param("siisss", $name, $rating, $price, $aliases, $relatedItems, $guid);
         return $stmt->execute();
     }
 
