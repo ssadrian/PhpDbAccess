@@ -3,10 +3,10 @@
   --bg-secondary: #121212;
 }
 
-body {
-  width: 100vw;
-  height: 100vh;
-  overflow-x: hidden;
+nav,
+footer {
+  justify-content: center;
+  text-align: center;
 }
 
 header > * button {

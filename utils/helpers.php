@@ -49,9 +49,9 @@ function isPasswordStrong(string $pwd): bool
     $pwdFile = "assets/rockyou.txt";
 
     $isPasswordStrong = true;
-    $containsDigits = preg_match('/.*\d.*/x', $pwd);
-    $containsSpecialChars = preg_match('/.*\W.*/x', $pwd);
-    $containsUppercase = preg_match('/.*[A-Z].*/x', $pwd);
+    $containsDigits = preg_match("/.*\d.*/", $pwd);
+    $containsSpecialChars = preg_match('/.*\W.*/', $pwd);
+    $containsUppercase = preg_match('/.*[A-Z].*/', $pwd);
 
     if (($containsDigits || $containsSpecialChars || $containsUppercase) === false) {
         $isPasswordStrong = false;
@@ -72,7 +72,6 @@ function isUserAdmin(User $user): bool
         $adminGuids[] = $entry["guid"];
     }
 
-    var_dump($user->guid);
     return in_array($user->guid, $adminGuids);
 }
 
@@ -120,4 +119,61 @@ function GUID(): string
 function getNonEmptyValue($a, $b)
 {
     return empty($a) ? $b : $a;
+}
+
+function startSessionsIfNotExistent(): void
+{
+    if (session_status() == PHP_SESSION_ACTIVE) {
+        return;
+    }
+
+    session_start();
+}
+
+function createDataListFromValues(array $optionValues, string $listName): void
+{
+    global $purifier;
+    $echoedValues = [];
+
+    echo "<datalist id='$listName'>";
+    foreach ($optionValues as $optionValue) {
+        $optionValue = $purifier->purify($optionValue);
+
+        if (in_array($optionValue, $echoedValues)) {
+            continue;
+        }
+
+        echo "<option value='$optionValue'></option>";
+        $echoedValues[] = $optionValue;
+    }
+    echo "</datalist>";
+}
+
+function createDropdownTextSelector(
+    array  $optionValues,
+    string $placeholder = "",
+    string $defaultValue = ""): void
+{
+    global $purifier;
+
+    $defaultValue = $purifier->purify($defaultValue);
+    $placeholder = $purifier->purify($placeholder);
+
+    $lowerPlaceholder = str_replace(" ", "-", strtolower($placeholder));
+    $inputName = "filter-$lowerPlaceholder";
+    $dataListName = "data-$lowerPlaceholder";
+
+    $formName = "filter-form";
+
+    echo "
+<label>
+  <input name='$inputName' placeholder='$placeholder' list='$dataListName' value='$defaultValue' form='$formName'>
+</label>";
+
+    createDataListFromValues($optionValues, $dataListName);
+}
+
+function returnToLandPage(): void
+{
+    header("Location: index.php");
 }

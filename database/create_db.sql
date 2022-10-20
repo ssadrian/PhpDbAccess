@@ -17,8 +17,8 @@ CREATE TABLE IF NOT EXISTS users
     guid     VARCHAR(36) PRIMARY KEY,
     name     VARCHAR(128) NOT NULL,
     surname  VARCHAR(128) NOT NULL,
-    username VARCHAR(128) NOT NULL,
-    email    VARCHAR(128) NOT NULL,
+    username VARCHAR(128) NOT NULL UNIQUE,
+    email    VARCHAR(128) NOT NULL UNIQUE,
     password VARCHAR(128) NOT NULL
 );
 
@@ -31,6 +31,5 @@ CREATE TABLE IF NOT EXISTS sessions
 CREATE TABLE IF NOT EXISTS shopping_carts
 (
     user VARCHAR(36) REFERENCES users (guid),
-    item varchar(36) references items (guid),
-    PRIMARY KEY (user, item)
+    item varchar(36) references items (guid)
 );

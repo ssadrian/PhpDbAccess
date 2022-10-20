@@ -1,5 +1,6 @@
 <?php
-  session_start();
+require_once "utils/helpers.php";
+startSessionsIfNotExistent();
 ?>
 
 <a href="https://codepen.io/luishodesign/pen/VwaawWd" target="_blank">
@@ -7,8 +8,12 @@
     <g id="study">
       <rect width="64" height="64"/>
       <g id="smoke">
-        <path id="smoke-2" d="M9 21L9.55279 19.8944C9.83431 19.3314 9.83431 18.6686 9.55279 18.1056L9 17L8.44721 15.8944C8.16569 15.3314 8.16569 14.6686 8.44721 14.1056L9 13" stroke="#797270"/>
-        <path id="smoke-1" d="M6.5 22L7.05279 20.8944C7.33431 20.3314 7.33431 19.6686 7.05279 19.1056L6.5 18L5.94721 16.8944C5.66569 16.3314 5.66569 15.6686 5.94721 15.1056L6.5 14" stroke="#797270"/>
+        <path id="smoke-2"
+              d="M9 21L9.55279 19.8944C9.83431 19.3314 9.83431 18.6686 9.55279 18.1056L9 17L8.44721 15.8944C8.16569 15.3314 8.16569 14.6686 8.44721 14.1056L9 13"
+              stroke="#797270"/>
+        <path id="smoke-1"
+              d="M6.5 22L7.05279 20.8944C7.33431 20.3314 7.33431 19.6686 7.05279 19.1056L6.5 18L5.94721 16.8944C5.66569 16.3314 5.66569 15.6686 5.94721 15.1056L6.5 14"
+              stroke="#797270"/>
       </g>
       <g id="laptop">
         <rect id="laptop-base" x="17" y="28" width="20" height="3" fill="#F3F3F3" stroke="#453F3C" stroke-width="2"/>
@@ -20,13 +25,17 @@
       </g>
       <g id="cup">
         <rect id="Rectangle 978" x="5" y="24" width="5" height="7" fill="#CCC4C4" stroke="#453F3C" stroke-width="2"/>
-        <path id="Ellipse 416" d="M11 28C12.1046 28 13 27.1046 13 26C13 24.8954 12.1046 24 11 24" stroke="#453F3C" stroke-width="2"/>
+        <path id="Ellipse 416" d="M11 28C12.1046 28 13 27.1046 13 26C13 24.8954 12.1046 24 11 24" stroke="#453F3C"
+              stroke-width="2"/>
         <rect id="Rectangle 996" x="6" y="25" width="3" height="1" fill="#D6D2D1"/>
       </g>
       <g id="books">
-        <rect id="Rectangle 984" x="58" y="27" width="4" height="14" transform="rotate(90 58 27)" fill="#B16B4F" stroke="#453F3C" stroke-width="2"/>
-        <rect id="Rectangle 985" x="56" y="23" width="4" height="14" transform="rotate(90 56 23)" fill="#797270" stroke="#453F3C" stroke-width="2"/>
-        <rect id="Rectangle 986" x="60" y="19" width="4" height="14" transform="rotate(90 60 19)" fill="#F78764" stroke="#453F3C" stroke-width="2"/>
+        <rect id="Rectangle 984" x="58" y="27" width="4" height="14" transform="rotate(90 58 27)" fill="#B16B4F"
+              stroke="#453F3C" stroke-width="2"/>
+        <rect id="Rectangle 985" x="56" y="23" width="4" height="14" transform="rotate(90 56 23)" fill="#797270"
+              stroke="#453F3C" stroke-width="2"/>
+        <rect id="Rectangle 986" x="60" y="19" width="4" height="14" transform="rotate(90 60 19)" fill="#F78764"
+              stroke="#453F3C" stroke-width="2"/>
         <rect id="Rectangle 993" x="47" y="20" width="12" height="1" fill="#F9AB82"/>
         <rect id="Rectangle 994" x="43" y="24" width="12" height="1" fill="#54504E"/>
         <rect id="Rectangle 995" x="45" y="28" width="12" height="1" fill="#804D39"/>

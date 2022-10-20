@@ -1,5 +1,6 @@
 <?php
 
+require_once "utils/helpers.php";
 require_once "models/User.php";
 require_once "controllers/UserController.php";
 
@@ -22,11 +23,13 @@ if (empty($userOrEmail) !== true && empty($pwd) !== true) {
         $isPasswordCorrect = password_verify($user->password, $possibleUser->password);
 
         if (($isUsernameCorrect || $isEmailCorrect) && $isPasswordCorrect) {
-            session_start();
-            $_SESSION['isLogged'] = true;
+            startSessionsIfNotExistent();
+            $_SESSION["isLogged"] = true;
+            $_SESSION["credentials"] =
+                "$possibleUser->guid:$possibleUser->username:$possibleUser->email:$possibleUser->password";
 
             if (isUserAdmin($possibleUser)) {
-              $_SESSION["isAdmin"] = true;
+                $_SESSION["isAdmin"] = true;
             }
 
             break;

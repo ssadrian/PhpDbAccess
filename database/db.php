@@ -5,7 +5,7 @@ $dbUser = "root";
 $dbPass = "";
 $dbName = "school";
 
-mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+mysqli_report(MYSQLI_REPORT_ERROR);
 $db = mysqli_connect($dbHostName, $dbUser, $dbPass, $dbName);
 
 if (mysqli_connect_errno()) {

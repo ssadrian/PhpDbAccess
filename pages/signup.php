@@ -14,7 +14,7 @@ $password = $_POST["password"] ?? "";
 $user = new User($name, $surname, $username, $email, $password, null);
 
 if ($user->isInitialized()) {
-    $isSuccessful = $userController->tryCreate(getCompleteUser($user));
+    $isSuccessful = $userController->tryCreate($user);
 }
 
 ?>

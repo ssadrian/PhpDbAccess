@@ -1,11 +1,38 @@
 <?php
-require_once "utils/sanitizer.php";
+
 require_once "utils/helpers.php";
 
-require_once "controllers/ItemController.php";
-require_once "models/Item.php";
+if (!($_SESSION["isLogged"] ?? false)) {
+    returnToLandPage();
+}
 
+require_once "controllers/UserController.php";
+$userController = UserController::getInstance();
+
+require_once "controllers/ItemController.php";
 $itemController = ItemController::getInstance();
+
+$credentials = $_SESSION["credentials"] ?? "";
+
+$itemGuid = $_POST["guid"] ?? "";
+$userGuid = explode(":", $credentials)[0];
+
+$pageAction = $_POST["page-action"] ?? "";
+
+if (!empty($itemGuid)) {
+    switch ($pageAction) {
+        case "add":
+            $userController->tryAddItemToCart($itemGuid, $userGuid);
+            break;
+        case "remove":
+            $userController->tryRemoveItemFromCart($itemGuid, $userGuid);
+            break;
+        default:
+            break;
+    }
+
+    returnToLandPage();
+}
 
 $filterGuid = $_POST["filter-guid"] ?? "";
 $filterName = $_POST["filter-name"] ?? "";
@@ -17,9 +44,11 @@ if ($filterRating === "") {
     $filterRating = -1;
 }
 
-$filterItem = getPurifiedItem(new Item($filterName, $filterRating, $filterAlias, $filterRelatedItem, $filterGuid));
+$filterItem = getPurifiedItem(
+    new Item($filterName, $filterRating, $filterAlias, $filterRelatedItem, $filterGuid)
+);
 
-$allItems = $filteredItems = $itemController->getAll();
+$allItems = $filteredItems = $userController->getCartItems($userGuid);
 if ($filterItem->isInitialized()) {
     $filteredItems = $itemController->getFiltered($filterItem);
 }
@@ -123,7 +152,6 @@ if ($filterItem->isInitialized()) {
   <tbody>
       <?php
       foreach ($filteredItems as $count => $dirtyItem) {
-          global $isLogged;
           $item = getPurifiedItem($dirtyItem);
 
           echo "<tr>";
@@ -133,23 +161,23 @@ if ($filterItem->isInitialized()) {
           echo "<td>" . implode(", ", $item->aliases) . "</td>";
           echo "<td>" . implode(", ", $item->relatedItems) . "</td>";
           echo "<td>$item->rating</td>";
-          if ($_SESSION["isLogged"] ?? false) {
-              echo "<td class='text-center'>
+          echo "<td class='text-center'>
 <form action='#' method='post'>
     <input type='text' name='guid' value='" . $item->guid . "' hidden>
     <input type='text' name='page-action' value='add' hidden>
 
-    <button class='btn btn-dark' type='submit' name='action' value='shop'>Add to cart</button>
-    <button class='btn btn-outline-dark' type='submit' name='action' value='update'>Edit</button>
-    <button class='btn btn-outline-danger' type='submit' name='action' value='delete'>Delete</button>
+    <button class='btn btn-dark' type='submit' name='action' value='shop'>Add another</button>
+</form>
+<form action='#' method='post'>
+    <input type='text' name='guid' value='" . $item->guid . "' hidden>
+    <input type='text' name='page-action' value='remove' hidden>
+
+    <button class='btn btn-outline-danger' type='submit' name='action' value='shop'>Delete</button>
 </form>
 ";
-          } else {
-            echo "<td></td>";
-          }
-
           echo "</tr>";
       }
       ?>
   </tbody>
 </table>
+

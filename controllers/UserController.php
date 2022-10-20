@@ -48,31 +48,50 @@ class UserController extends BaseController
             return false;
         }
 
-        $user = getPurifiedUser($item);
+        $user = getPurifiedUser(getCompleteUser($item));
         $qry = "INSERT INTO users (guid, name, surname, username, email, password) VALUE (?, ?, ?, ?, ?, ?)";
 
         $stmt = createPreparedStatement($qry);
 
-        $stmt->bind_param("ssssss",
-            $user->guid, $user->name, $user->surname, $user->username, $user->email, $user->password);
-
-        return $stmt->execute();
+        return $stmt->execute([
+            $user->guid, $user->name, $user->surname, $user->username, $user->email, $user->password
+        ]);
     }
 
-    function tryAddItemToCart(Item $item, User $user): bool
+    function tryAddItemToCart(string $itemGuid, string $userGuid): bool
     {
+        if (empty($itemGuid) || empty($userGuid)) {
+            return false;
+        }
+
         $qry = "INSERT INTO shopping_carts (user, item) VALUE (?, ?)";
-        $stmt = createPreparedStatement($qry);
-        $stmt->bind_param("ss", $user->guid, $item->guid);
-
-        return $stmt->execute();
+        return createPreparedStatement($qry)
+            ->execute([$userGuid, $itemGuid]);
     }
 
-    function getCartItems(User $user): array
+    function tryRemoveItemFromCart(string $itemGuid, string $userGuid): bool
     {
+        if (empty($itemGuid) || empty($userGuid)) {
+            return false;
+        }
+
+        $qry = "DELETE FROM shopping_carts WHERE user = ? AND item = ? LIMIT 1";
+        return createPreparedStatement($qry)
+            ->execute([$userGuid, $itemGuid]);
+    }
+
+    function getCartItems(string $userGuid): array
+    {
+        if (empty($userGuid)) {
+            return array();
+        }
+
         $qry = "SELECT item FROM shopping_carts WHERE user = ?";
         $stmt = createPreparedStatement($qry);
-        $stmt->bind_param("s", $user->guid);
+
+        if ($stmt->execute([$userGuid]) === false) {
+            return array();
+        }
 
         $results = $stmt->get_result();
 
